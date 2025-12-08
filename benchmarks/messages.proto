@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+message GameStateUpdate {
+  string playerId = 1;
+  Position position = 2;
+  Rotation rotation = 3;
+  int32 health = 4;
+  int32 mana = 5;
+  int32 stamina = 6;
+  repeated string equipment = 7;
+  string status = 8;
+  int64 timestamp = 9;
+}
+
+message Position {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message Rotation {
+  float pitch = 1;
+  float yaw = 2;
+  float roll = 3;
+}
+
+message APIResponse {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  Profile profile = 4;
+  Preferences preferences = 5;
+  bool verified = 6;
+  string createdAt = 7;
+  int64 lastLogin = 8;
+}
+
+message Profile {
+  string displayName = 1;
+  string avatar = 2;
+  string bio = 3;
+  int32 followers = 4;
+  int32 following = 5;
+}
+
+message Preferences {
+  bool notifications = 1;
+  string theme = 2;
+  string language = 3;
+}
+
+message IoTSensorData {
+  string deviceId = 1;
+  string location = 2;
+  repeated Reading readings = 3;
+  string status = 4;
+  int32 batteryLevel = 5;
+  int32 signalStrength = 6;
+}
+
+message Reading {
+  int64 timestamp = 1;
+  float temperature = 2;
+  float humidity = 3;
+}
+
+message ChatMessage {
+  string messageId = 1;
+  string conversationId = 2;
+  string senderId = 3;
+  string senderName = 4;
+  string text = 5;
+  int64 timestamp = 6;
+  map<string, int32> reactions = 7;
+  repeated string mentions = 8;
+  bool edited = 9;
+}
+
+message StockTick {
+  string symbol = 1;
+  double price = 2;
+  float priceChange = 3;
+  float percentChange = 4;
+  int64 volume = 5;
+  float bid = 6;
+  float ask = 7;
+  float high = 8;
+  float low = 9;
+  float open = 10;
+  float close = 11;
+  int64 timestamp = 12;
+  string exchange = 13;
+}
+
+message TestMessage {
+  string test = 1;
+  int32 index = 2;
+}

@@ -1,1 +1,4 @@
 /target
+/examples/**/node_modules
+/examples
+/Cargo.lock
