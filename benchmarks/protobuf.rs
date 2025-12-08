@@ -58,6 +58,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
     let _server = thread::spawn(move || {
         for stream in listener.incoming() {
             if let Ok(mut s) = stream {
+                s.set_nodelay(true).ok();
                 thread::spawn(move || handle_client(&mut s));
             }
         }
@@ -69,6 +70,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
 
     for scenario in &scens {
         let mut stream = TcpStream::connect("127.0.0.1:4012").expect("connect proto");
+        stream.set_nodelay(true).expect("set_nodelay");
         let (avg, min, max, p95, p99) = bench_round_trip(&mut stream, scenario, 200);
         let size = encoded_size(scenario) + 4; // length prefix
         results.push(StatResult {
@@ -83,6 +85,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
     }
 
     let mut stream = TcpStream::connect("127.0.0.1:4012").expect("connect proto throughput");
+    stream.set_nodelay(true).expect("set_nodelay");
     let throughput = throughput_test(&mut stream, 1_000);
     (results, throughput)
 }
@@ -106,6 +109,7 @@ fn handle_client(stream: &mut TcpStream) {
         if stream.write_all(&buf).is_err() {
             break;
         }
+        let _ = stream.flush();
     }
 }
 

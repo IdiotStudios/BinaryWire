@@ -55,6 +55,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
     let _server = thread::spawn(move || {
         for stream in listener.incoming() {
             if let Ok(mut stream) = stream {
+                stream.set_nodelay(true).ok();
                 thread::spawn(move || handle_client(&mut stream));
             }
         }
@@ -67,6 +68,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
 
     for scenario in &scenarios {
         let mut stream = TcpStream::connect("127.0.0.1:4010").expect("connect biwi");
+        stream.set_nodelay(true).expect("set_nodelay");
         let (avg, min, max, p95, p99) = benchmark_round_trip(&mut stream, scenario, 200);
         let size = message_size(scenario) + 4; // length prefix
         results.push(StatResult {
@@ -82,6 +84,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
 
     // Throughput test
     let mut stream = TcpStream::connect("127.0.0.1:4010").expect("connect biwi throughput");
+    stream.set_nodelay(true).expect("set_nodelay");
     let throughput = throughput_test(&mut stream, 1_000);
 
     (results, throughput)
@@ -108,6 +111,7 @@ fn handle_client(stream: &mut TcpStream) {
         if let Err(_) = stream.write_all(&frame) {
             break;
         }
+        let _ = stream.flush();
     }
 }
 
@@ -224,7 +228,7 @@ fn json_to_biwi(value: &serde_json::Value) -> BiWiValue {
                 BiWiValue::Null
             }
         }
-        serde_json::Value::String(s) => BiWiValue::String(s.clone()),
+        serde_json::Value::String(s) => BiWiValue::from(s.as_str()),
         serde_json::Value::Array(arr) => {
             BiWiValue::Array(arr.iter().map(json_to_biwi).collect())
         }

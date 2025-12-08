@@ -54,6 +54,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
     let _server = thread::spawn(move || {
         for stream in listener.incoming() {
             if let Ok(mut s) = stream {
+                s.set_nodelay(true).ok();
                 thread::spawn(move || handle_client(&mut s));
             }
         }
@@ -64,6 +65,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
     let scens = scenarios();
     for scenario in &scens {
         let mut stream = TcpStream::connect("127.0.0.1:4011").expect("connect json");
+        stream.set_nodelay(true).expect("set_nodelay");
         let (avg, min, max, p95, p99) = bench_round_trip(&mut stream, scenario, 200);
         let size = serde_json::to_vec(&scenario.payload).unwrap().len() + 1;
         results.push(StatResult {
@@ -78,6 +80,7 @@ fn run_network() -> (Vec<StatResult>, ThroughputResult) {
     }
 
     let mut stream = TcpStream::connect("127.0.0.1:4011").expect("connect json throughput");
+    stream.set_nodelay(true).expect("set_nodelay");
     let throughput = throughput_test(&mut stream, 1_000);
     (results, throughput)
 }
