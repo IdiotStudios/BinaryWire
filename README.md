@@ -5,6 +5,7 @@ A streaming, binary-first alternative to JSON designed for low-latency, incremen
 ## Status
 
 ✅ **Base System Complete** - Core encoding/decoding functionality implemented
+✅ **UDP Networking** - Fast UDP transport with automatic packet loss recovery
 
 ### Implemented Features
 
@@ -15,14 +16,17 @@ A streaming, binary-first alternative to JSON designed for low-latency, incremen
 - ✅ BiWiMessage for convenient field-based message handling
 - ✅ Buffer caching for efficient re-encoding
 - ✅ Full test coverage
+- ✅ **UDP Server** (`BiWiUdpServer`) - Synchronous server with packet loss recovery
+- ✅ **UDP Client** (`BiWiUdpClient`) - Non-blocking client with automatic retransmission
+- ✅ **Packet Manager** - Sequence tracking, ACKs, fragmentation, and duplicate detection
 
 ### Todo
 
-- ⏳ Server implementation (TCP/networking)
-- ⏳ Client implementation
-- ⏳ Async support with Tokio
-- ⏳ Benchmarks vs JSON/Protobuf
-- ⏳ Documentation examples
+- ⏳ Async/Tokio support
+- ⏳ TCP fallback mode
+- ⏳ TLS encryption
+- ⏳ Compression
+- ⏳ Full benchmark suite
 
 ## Installation
 
@@ -58,11 +62,51 @@ fn main() {
 }
 ```
 
+## UDP Networking (Fast Transport with Packet Loss Recovery)
+
+BiWi now includes a high-performance UDP implementation with automatic packet loss recovery:
+
+```rust
+use biwi::{BiWiUdpServer, BiWiUdpClient, BiWiMessage, BiWiValue};
+
+// Server
+let mut server = BiWiUdpServer::new("127.0.0.1", 9001)?;
+if let Some((client_id, msg)) = server.recv_packet() {
+    println!("Received: {:?}", msg.get_field(1));
+    // Echo back
+    server.send_to(&client_id, &msg)?;
+}
+
+// Client
+let client = BiWiUdpClient::connect("127.0.0.1:9001")?;
+let mut msg = BiWiMessage::new();
+msg.set_field(1, BiWiValue::String("Hello".to_string()));
+client.send(&msg)?;
+
+// Receive (non-blocking)
+if let Some(response) = client.try_recv() {
+    println!("Response: {:?}", response.get_field(1));
+}
+```
+
+### Features
+
+- **Packet loss recovery**: Automatic retransmission with exponential backoff
+- **Fragmentation**: Large messages automatically split into MTU-sized packets
+- **ACK system**: Cumulative acknowledgments prevent duplicate processing
+- **Low latency**: No connection handshake, minimal overhead
+- **Scalable**: Each client has independent packet manager
+
+See [UDP_IMPLEMENTATION.md](UDP_IMPLEMENTATION.md) for detailed documentation.
+
 ## Running Examples
 
 ```bash
 # Basic encoding/decoding example
 cargo run --example basic
+
+# UDP server/client example
+cargo run --example udp
 
 # Express-style server/client example
 cd examples/express

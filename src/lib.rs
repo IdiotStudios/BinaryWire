@@ -8,12 +8,18 @@ pub mod types;
 pub mod encoder;
 pub mod decoder;
 pub mod message;
+pub mod network;
+pub mod server;
+pub mod client;
 
 // Re-exports for convenience
 pub use types::BiWiType;
 pub use encoder::{BiWiEncoder, BiWiValue};
 pub use decoder::{BiWiDecoder, DecodeError, DecodeResult, DecodedField, ChunkStart, ChunkData};
 pub use message::BiWiMessage;
+pub use network::{PacketManager, UdpPacket, PacketType};
+pub use server::BiWiUdpServer;
+pub use client::BiWiUdpClient;
 
 /// BiWi protocol version
 pub const VERSION: &str = "0.1.0";

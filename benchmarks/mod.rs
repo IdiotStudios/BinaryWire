@@ -3,6 +3,7 @@ use serde_json::json;
 pub mod biwi;
 pub mod json;
 pub mod protobuf;
+pub mod udp;
 
 pub mod proto {
     include!(concat!(env!("OUT_DIR"), "/_.rs"));
