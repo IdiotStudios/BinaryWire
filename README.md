@@ -206,11 +206,3 @@ Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 ## Contributing
 
 Contributions are welcome! This is a step-by-step conversion from the JavaScript implementation.
-
-## Roadmap
-
-1. ✅ **Phase 1: Base System** - Core types, encoder, decoder, message handling
-2. ⏳ **Phase 2: Networking** - Server and client implementations
-3. ⏳ **Phase 3: Async** - Tokio integration for async I/O
-4. ⏳ **Phase 4: Optimization** - Benchmarks and performance tuning
-5. ⏳ **Phase 5: Advanced** - Connection pooling, streaming chunks, etc.
