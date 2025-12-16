@@ -199,10 +199,6 @@ Each BiWi message consists of one or more **fields**:
 - **CHUNK_DATA** (0x0B) - Chunk payload
 - **CHUNK_END** (0x0C) - End streaming
 
-## License
-
-Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
-
 ## Contributing
 
 Contributions are welcome! This is a step-by-step conversion from the JavaScript implementation.
